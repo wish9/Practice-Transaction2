@@ -41,6 +41,7 @@ public class MemberService {
     public Member createMember(Member member) {
         verifyExistsEmail(member.getEmail());
         Member savedMember = memberRepository.save(member);
+        log.info("# Saved member");
         /**
          * TODO
          *  - 현재 이메일 전송 중 5초 뒤에 예외가 발생합니다.
