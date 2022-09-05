@@ -54,6 +54,7 @@ public class MemberService {
          *  - Spring에서는 Event를 Publish(발행)하는 기능이 있으며, 회원 등록 자체를 이벤트로 보고 회원이 등록되었다는 이벤트를 애플리케이션 전체에 보낼 수 있습니다.
          *      - MemberService에서 회원 등록 이벤트를 비동기 적으로 먼저 보내고 이 이벤트를 리스닝(Listening)하는 곳에서 이메일을 보낼 수 있습니다.
          *      - 이벤트 리스너(Event Listener)가 이메일을 보내고 실패할 경우 이미 저장된 회원 정보를 삭제할 수 있습니다.
+     *      - Spring에서는 @Async 애너테이션을 이용해서 비동기 작업을 손쉽게 처리할 수 있습니다.
          */
         ExecutorService executorService = Executors.newSingleThreadExecutor();
         executorService.submit(() -> {
