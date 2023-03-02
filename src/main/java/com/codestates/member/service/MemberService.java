@@ -6,6 +6,8 @@ import com.codestates.helper.EmailSender;
 import com.codestates.member.entity.Member;
 import com.codestates.member.repository.MemberRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -30,12 +32,12 @@ import java.util.concurrent.Executors;
 @Service
 public class MemberService {
     private final MemberRepository memberRepository;
-    private final EmailSender emailSender;
+    @Autowired
+    private ApplicationEventPublisher applicationEventPublisher;
 
-    public MemberService(MemberRepository memberRepository,
-                         EmailSender emailSender) {
+    public MemberService(MemberRepository memberRepository, ApplicationEventPublisher applicationEventPublisher) {
         this.memberRepository = memberRepository;
-        this.emailSender = emailSender;
+        this.applicationEventPublisher = applicationEventPublisher;
     }
 
     public Member createMember(Member member) {
@@ -57,15 +59,9 @@ public class MemberService {
          *      - 이벤트 리스너(Event Listener)가 이메일을 보내고 실패할 경우 이미 저장된 회원 정보를 삭제할 수 있습니다.
      *      - Spring에서는 @Async 애너테이션을 이용해서 비동기 작업을 손쉽게 처리할 수 있습니다.
          */
-        ExecutorService executorService = Executors.newSingleThreadExecutor();
-        executorService.submit(() -> {
-            try {
-                emailSender.sendEmail("any email message");
-            } catch (Exception e) {
-                log.error("MailSendException happened: ", e);
-                throw new RuntimeException(e);
-            }
-        });
+
+        applicationEventPublisher.publishEvent(savedMember);
+
         return savedMember;
     }
 
